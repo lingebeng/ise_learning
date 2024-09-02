@@ -69,6 +69,7 @@ class GA(object):
         self._init_seed(initial_seeds)
         self._init_mutator()
 
+    # 初始化种子
     def _init_seed(self, initial_seeds):
         self.seeds = []
         self.info_code = {}
@@ -82,14 +83,17 @@ class GA(object):
                 "filename": "{}_{}{}.py".format(self.api_call, "seed", idx + 1),
             }
 
+    # 多臂老虎机算法初始化
     def _init_multi_arm(self):
         self.replace_type_p = {}
+        # 选择那几种替换类型， suffix,prefix,argument、method
         for t in self.replace_type:
             # Initialize with 1 to avoid starving
             # Change initial state to 0.5 following the Thompson Sampling algorithm
             self.replace_type_p[t] = [1, 2]  # success / total
         self.epsilon = 0.1
 
+    # 根据不同的变异符集合，初始化对应的替换类型集合！
     def _init_mutator(self):
         if self.use_single_mutator:
             self.replace_type = [self.replace_type]
@@ -175,6 +179,7 @@ class GA(object):
         heapq.heappush(self.seeds, (-value, code))
         self.info_code[code]["used_as_seed"] += self.num_generated
 
+    # 类似于纯虚函数，子类必须实现这个函数，否则就会报错！
     def _compute_score(self, code):
         raise NotImplementedError
 
@@ -466,7 +471,7 @@ class GAR_depth(GA):
         if self.seed_pool_size > 0:
             while len(self.seeds) > self.seed_pool_size:
                 heapq.heappop(self.seeds)
-
+    # 计算适应度函数
     def _compute_fitness_score(self, code):
         if self.seed_selection_algo == "fitness":
             max_depth = DepthFinder(self.library).max_depth(code)
